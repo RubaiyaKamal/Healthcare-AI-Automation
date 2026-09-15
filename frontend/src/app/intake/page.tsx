@@ -65,20 +65,20 @@ export default function IntakePage() {
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-4 py-6">
       <header className="mb-4 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold">Patient Intake Agent</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-xl font-bold text-brand-black">Patient Intake Agent</h1>
+          <p className="text-sm text-brand-muted">
             Duplicate check enforced before registration. Synthetic data only.
           </p>
         </div>
-        <a href="/" className="text-sm text-sky-600 hover:underline">
+        <a href="/" className="text-sm font-semibold text-brand-brown hover:underline">
           ← Home
         </a>
       </header>
 
-      <div className="flex flex-1 flex-col gap-2 overflow-y-auto rounded-xl border border-slate-200 bg-white p-4">
+      <div className="flex flex-1 flex-col gap-2 overflow-y-auto rounded-xl border border-brand-line bg-white p-4">
         {messages.length === 0 && (
           <div className="mb-2">
-            <p className="mb-3 text-sm text-slate-500">
+            <p className="mb-3 text-sm text-brand-muted">
               The front-desk agent will walk you through registration. Try:
             </p>
             <div className="flex flex-wrap gap-2">
@@ -86,7 +86,7 @@ export default function IntakePage() {
                 <button
                   key={s}
                   onClick={() => send(s)}
-                  className="rounded-full border border-slate-300 px-3 py-1 text-xs text-slate-700 transition hover:bg-slate-100"
+                  className="rounded-full border border-brand-line bg-brand-yellowSoft px-3 py-1 text-xs text-brand-brownDark transition hover:bg-brand-yellowLight"
                 >
                   {s}
                 </button>
@@ -100,8 +100,8 @@ export default function IntakePage() {
             key={i}
             className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
               m.role === "user"
-                ? "self-end bg-sky-600 text-white"
-                : "self-start bg-slate-100 text-slate-800"
+                ? "self-end bg-brand-yellow text-brand-ink"
+                : "self-start border border-brand-line bg-white text-brand-brownDark"
             }`}
             style={{ whiteSpace: "pre-wrap" }}
           >
@@ -110,20 +110,20 @@ export default function IntakePage() {
         ))}
 
         {busy && (
-          <div className="self-start rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-500">
-            <span className="mr-1 inline-block h-2 w-2 animate-pulse rounded-full bg-sky-500" />
+          <div className="self-start rounded-lg border border-brand-line bg-white px-3 py-2 text-sm text-brand-muted">
+            <span className="mr-1 inline-block h-2 w-2 animate-pulse rounded-full bg-brand-brown" />
             Running agent tools…
           </div>
         )}
 
         {lastToolCalls.length > 0 && (
-          <div className="self-start rounded-lg border border-dashed border-slate-300 px-3 py-2 text-xs text-slate-500">
+          <div className="self-start rounded-lg border border-dashed border-brand-line px-3 py-2 text-xs text-brand-muted">
             <p className="font-medium">Tools called:</p>
             <ul className="mt-1 space-y-1 font-mono">
               {lastToolCalls.map((t, i) => (
                 <li key={i}>
                   {t.tool}
-                  <span className="text-slate-400">
+                  <span className="text-brand-brownLight">
                     {" "}
                     {JSON.stringify(t.args).slice(0, 140)}
                   </span>
@@ -147,13 +147,13 @@ export default function IntakePage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Describe the new patient…"
-          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500"
+          className="flex-1 rounded-lg border border-brand-line bg-brand-cream px-3 py-2 text-sm text-brand-ink outline-none focus:border-brand-brown"
           disabled={busy}
         />
         <button
           type="submit"
           disabled={busy || !input.trim()}
-          className="rounded-lg bg-sky-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-sky-700 disabled:opacity-40"
+          className="rounded-lg bg-brand-yellow px-4 py-2 text-sm font-bold text-brand-ink transition hover:bg-brand-yellowLight disabled:opacity-40"
         >
           Send
         </button>

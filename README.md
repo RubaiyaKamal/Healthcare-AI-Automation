@@ -1,4 +1,4 @@
-# Healthcare AI Automation — Phase 1
+# HealthFlow AI — Phase 1
 
 FHIR-backed agentic automations: patient intake and insurance eligibility.
 
@@ -74,6 +74,25 @@ python -m pytest tests/ -q
   Watch the tool-call transcript: `validate_patient_data` → `check_for_duplicates` → `register_patient`.
 - `/eligibility` — pick a patient, click Check Eligibility, see the live result
   plus `resolved_by: RULE|LLM` and the audit trail.
+
+## Mobile app (Expo)
+
+Companion React Native app in `mobile/` with the same Home / Intake / Eligibility
+flows. Run it with Expo Go:
+
+```bash
+cd mobile
+npx expo start        # scan the QR in Expo Go
+```
+
+The API base URL is derived from the Expo dev-server host automatically, so the
+phone reaches the FastAPI backend on your machine. Start the backend bound to
+all interfaces if the phone is not on the same host:
+
+```bash
+cd backend
+.venv\Scripts\python -m uvicorn main:app --host 0.0.0.0 --port 8000
+```
 
 ## Design notes
 

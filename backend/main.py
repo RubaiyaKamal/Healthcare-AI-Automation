@@ -1,5 +1,5 @@
 """
-FastAPI backend for Healthcare AI — Phase 1.
+FastAPI backend for HealthFlow AI — Phase 1.
 
 REST surface the Next.js frontend talks to:
   GET  /api/patients                 — list from cache
@@ -35,7 +35,7 @@ async def lifespan(app: FastAPI):
     await database.close_pool()
 
 
-app = FastAPI(title="Healthcare AI — Phase 1", lifespan=lifespan)
+app = FastAPI(title="HealthFlow AI — Phase 1", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
