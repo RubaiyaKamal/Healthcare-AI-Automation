@@ -1,0 +1,64 @@
+services:
+  hapi-fhir:
+    image: hapiproject/hapi:latest
+    container_name: hapi-fhir
+    ports:
+      - "8080:8080"
+    environment:
+      - HAPI_FHIR_URL=http://localhost:8080/fhir
+      - SPRING_CONFIG_LOCATION=classpath:/application.yaml
+      - spring.datasource.url=jdbc:postgresql://hapi-db:5432/hapi
+      - spring.datasource.username=hapi
+      - spring.datasource.password=hapi_123
+      - spring.datasource.driverClassName=org.postgresql.Driver
+      - spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+      - spring.jpa.properties.hibernate.search.enabled=true
+      - hapi.fhir.reuse_cached_search_results_millis=0
+    depends_on:
+      hapi-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/fhir/metadata"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
+  hapi-db:
+    image: postgres:16-alpine
+    container_name: hapi-db
+    environment:
+      - POSTGRES_DB=hapi
+      - POSTGRES_USER=hapi
+      - POSTGRES_PASSWORD=hapi_123
+    ports:
+      - "5433:5432"
+    volumes:
+      - hapi-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hapi -d hapi"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app-db:
+    image: postgres:16-alpine
+    container_name: app-db
+    environment:
+      - POSTGRES_DB=healthcare_ai
+      - POSTGRES_USER=app_user
+      - POSTGRES_PASSWORD=app_password
+    ports:
+      - "5434:5432"
+    volumes:
+      - app-db-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app_user -d healthcare_ai"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  hapi-db-data:
+  app-db-data:
