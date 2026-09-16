@@ -11,11 +11,13 @@ import { colors } from './src/theme';
 import HomeScreen from './src/screens/HomeScreen';
 import IntakeScreen from './src/screens/IntakeScreen';
 import EligibilityScreen from './src/screens/EligibilityScreen';
+import RcmScreen from './src/screens/RcmScreen';
 
 const TABS = [
   { key: 'home', label: 'Home' },
   { key: 'intake', label: 'Intake' },
   { key: 'eligibility', label: 'Eligibility' },
+  { key: 'rcm', label: 'RCM' },
 ];
 
 export default function App() {
@@ -28,6 +30,7 @@ export default function App() {
         {tab === 'home' && <HomeScreen onNavigate={setTab} />}
         {tab === 'intake' && <IntakeScreen />}
         {tab === 'eligibility' && <EligibilityScreen />}
+        {tab === 'rcm' && <RcmScreen />}
       </View>
 
       <View style={styles.tabBar}>

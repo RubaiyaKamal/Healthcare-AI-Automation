@@ -18,9 +18,14 @@ export default function HomeScreen({ onNavigate }) {
           onPress={() => onNavigate('intake')}
         />
         <FeatureCard
-          title="Eligibility Check"
+          title="Insurance Eligibility Check"
           desc="Rules-first insurance verification with a full audit trail."
           onPress={() => onNavigate('eligibility')}
+        />
+        <FeatureCard
+          title="Revenue Cycle"
+          desc="Eligibility → coding → prior auth → claim submission → denial handling. One agent, full pipeline."
+          onPress={() => onNavigate('rcm')}
         />
 
         <Text style={styles.footnote}>

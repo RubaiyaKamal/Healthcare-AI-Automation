@@ -46,6 +46,9 @@ uvicorn main:app --reload --port 8000
 # 3. Seed synthetic patients (with Coverage resources)
 python seed_synthea_data.py --count 12
 
+# 3b. Seed portal chatbot data (appointments, labs, meds, balances) for all patients
+python seed_portal_data.py
+
 # 4. Frontend
 cd ../frontend
 npm install
@@ -66,6 +69,9 @@ python -m pytest tests/ -q
 | POST   | `/api/intake`               | Intake agent chat                        |
 | POST   | `/api/eligibility/check`    | Eligibility check (rules-first)          |
 | GET    | `/api/eligibility/{id}`     | Historical checks for a patient          |
+| POST   | `/api/chat/site`            | Site visitor (marketing) chatbot turn    |
+| POST   | `/api/chat/site/demo-request` | Capture a demo/sales lead              |
+| POST   | `/api/chat/portal`          | Patient portal chatbot turn (scoped)     |
 | GET    | `/api/audit`                | Recent audit trail rows                  |
 
 ## Demo pages
@@ -74,6 +80,12 @@ python -m pytest tests/ -q
   Watch the tool-call transcript: `validate_patient_data` → `check_for_duplicates` → `register_patient`.
 - `/eligibility` — pick a patient, click Check Eligibility, see the live result
   plus `resolved_by: RULE|LLM` and the audit trail.
+- `/portal` — the scoped patient portal assistant (#20 + #14): appointments,
+  lab-result status, medication list, billing, and the red-flag triage flow with
+  a hard-stop to emergency care. Conversations persist to `chat_sessions` and
+  the audit trail. Pick any seeded patient — try **"I'm not feeling well"**,
+  then pick a red-flag reply to see the hard stop, or a symptom severity to see
+  the nurse-callback queue.
 
 ## Mobile app (Expo)
 
@@ -109,3 +121,33 @@ cd backend
 1. EHR core: FHIR client, Synthea-style seeder, Postgres cache, get_patient, audit.
 2. Intake: registration form + `register_patient` tool + duplicate check + Intake Agent.
 3. Eligibility: `check_eligibility` tool (rules→LLM), response parser, stored result, demo UI.
+
+## Phase 2 scope (done)
+
+4. Revenue cycle: coding suggestions + validation, prior-auth rules, claims
+   lifecycle, denials queue with suggested fixes, RCM dashboard + metrics.
+
+## Phase 3 scope (done)
+
+5. Site visitor chatbot (`site_chatbot.py`): deterministic pre-sales answers
+   (capability categories, pricing → demo, honest HIPAA status, Epic/Cerner
+   integration, fallback → sales handoff). Demo leads captured to
+   `demo_requests`; no clinical answers, no unverified compliance claims.
+6. Patient portal chatbot (`patient_chatbot.py`): scoped state machine for
+   appointments (#1), results status + read-only meds (#15/#8), billing (#2/#13),
+   and structured triage (#14) with red-flag hard-stops and nurse-callback
+   queueing. Enabled by the `appointments`, `lab_results`, `medications` and
+   `appointment_requests` tables (see `seed_portal_data.py`).
+
+## Chatbot safety notes
+
+- Both chatbots are **deterministic** — no OpenAI key required — so scope
+  boundaries are enforced by code, not prompt-tuning.
+- The portal chatbot never diagnoses, never interprets a lab value beyond
+  normal/abnormal, never suggests medication changes, and never softens a
+  flagged result. Every abnormal/critical lab also flags the `notified`
+  human-notification path of #15.
+- Any urgent language (including any red-flag triage answer) produces an
+  immediate, terminal hard-stop to emergency care — the session does not resume.
+- Every portal exchange appends to `chat_sessions` and `audit_log`; the chat is
+  deliberately not a private side-channel.

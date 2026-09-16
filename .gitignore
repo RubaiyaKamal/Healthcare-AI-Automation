@@ -17,6 +17,11 @@ env/
 node_modules/
 .next/
 out/
+*.tsbuildinfo
+
+# Expo
+dist-check/
+.expo/
 
 # Docker
 *.log

@@ -1,4 +1,5 @@
 import asyncpg
+from datetime import date
 from contextlib import asynccontextmanager
 from config import DATABASE_URL
 
@@ -6,11 +7,26 @@ from config import DATABASE_URL
 _pool: asyncpg.Pool | None = None
 
 
+async def _setup_codecs(conn: asyncpg.Connection) -> None:
+    # The app passes DOB as 'YYYY-MM-DD' strings (from FHIR) into DATE columns.
+    # asyncpg's default date codec only accepts real date objects, so accept both
+    # at encode time and keep returning date objects on read.
+    def _enc(v):
+        return v if isinstance(v, str) else v.isoformat()
+
+    def _dec(v: str) -> date:
+        return date.fromisoformat(v)
+
+    await conn.set_type_codec("date", schema="pg_catalog", encoder=_enc, decoder=_dec, format="text")
+
+
 async def init_pool() -> None:
     """Create the shared connection pool. Call once at app startup."""
     global _pool
     if _pool is None:
         _pool = await asyncpg.create_pool(DATABASE_URL, min_size=2, max_size=10)
+        async with _pool.acquire() as conn:
+            await _setup_codecs(conn)
 
 
 async def close_pool() -> None:

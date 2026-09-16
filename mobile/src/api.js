@@ -48,4 +48,24 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ messages, actor: 'mobile-demo' }),
     }),
+  rcmMetrics: () => request('/rcm/metrics'),
+  rcmClaims: () => request('/rcm/claims'),
+  rcmDenials: () => request('/rcm/denials'),
+  rcmCoding: () => request('/rcm/coding'),
+  rcmPriorAuth: () => request('/rcm/prior-auth'),
+  rcmRun: ({ patient_fhir_id, clinical_note, payer = '' }) =>
+    request('/rcm/run', {
+      method: 'POST',
+      body: JSON.stringify({
+        patient_fhir_id,
+        clinical_note,
+        payer,
+        actor: 'mobile-demo',
+      }),
+    }),
+  rcmSuggestDenialFix: (denialId) =>
+    request('/rcm/suggest-denial-fix', {
+      method: 'POST',
+      body: JSON.stringify({ denial_id: denialId }),
+    }),
 };

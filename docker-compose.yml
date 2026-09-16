@@ -11,8 +11,8 @@ services:
       - spring.datasource.username=hapi
       - spring.datasource.password=hapi_123
       - spring.datasource.driverClassName=org.postgresql.Driver
-      - spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
-      - spring.jpa.properties.hibernate.search.enabled=true
+      - HIBERNATE_DIALECT=ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
+      - spring.jpa.database-platform=ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
       - hapi.fhir.reuse_cached_search_results_millis=0
     depends_on:
       hapi-db:
